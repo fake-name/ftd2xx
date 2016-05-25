@@ -105,11 +105,24 @@ def openEx(id_str, flags=OPEN_BY_SERIAL_NUMBER):
     call_ft(_ft.FT_OpenEx, id_str, _ft.DWORD(flags), c.byref(h))
     return FTD2XX(h)
 
-def open_by_desc(desc):
+def open_by_serial(serial):
+    """Open a handle to a usb device by serial number"""
+    h = _ft.FT_HANDLE()
+    call_ft(_ft.FT_OpenEx, serial, _ft.DWORD(OPEN_BY_SERIAL_NUMBER), c.byref(h))
+    return FTD2XX(h, update=False)
+
+def open_by_description(desc):
     """Open a handle to a usb device by description"""
     h = _ft.FT_HANDLE()
     call_ft(_ft.FT_OpenEx, desc, _ft.DWORD(OPEN_BY_DESCRIPTION), c.byref(h))
     return FTD2XX(h, update=False)
+
+if sys.platform == 'win32':
+    def open_by_location(location):
+        """Open a handle to a usb device by location"""
+        h = _ft.FT_HANDLE()
+        call_ft(_ft.FT_OpenEx, location, _ft.DWORD(OPEN_BY_LOCATION), c.byref(h))
+        return FTD2XX(h, update=False)
 
 if sys.platform == 'win32':
     from win32con import GENERIC_READ, GENERIC_WRITE, OPEN_EXISTING
@@ -418,9 +431,9 @@ class FTD2XX(object):
 
 __all__ = ['call_ft', 'listDevices', 'getLibraryVersion', \
            'createDeviceInfoList', 'getDeviceInfoDetail', 'open', \
-           'openEx', 'open_by_desc', 'FTD2XX',  \
+           'openEx', 'open_by_serial', 'open_by_description', 'FTD2XX',  \
            'DeviceError', 'ft_program_data']
 if sys.platform == 'win32':
-    __all__ += ['w32CreateFile']
+    __all__ += ['w32CreateFile', 'open_by_location']
 else:
     __all__ += ['getVIDPID', 'setVIDPID']

@@ -13,9 +13,9 @@ from ftd2xx import *
 
 __all__ = ['call_ft', 'listDevices', 'getLibraryVersion', \
            'createDeviceInfoList', 'getDeviceInfoDetail', 'open', \
-           'openEx', 'FTD2XX',  \
+           'openEx', 'open_by_serial', 'open_by_description', 'FTD2XX',  \
            'DeviceError', 'ft_program_data']
 if sys.platform == 'win32':
-    __all__ += ['w32CreateFile']
+    __all__ += ['w32CreateFile', 'open_by_location']
 else:
     __all__ += ['getVIDPID', 'setVIDPID']
