@@ -134,6 +134,21 @@ else:
         """Linux only. Set the VID and PID of the device"""
         call_ft(_ft.FT_SetVIDPID, _ft.DWORD(vid), _ft.DWORD(pid))
 
+class EEPROM(object):
+    """Class for reading and writing EEPROM as an array of 16-bit words"""
+    def __init__(self, handle):
+        self.handle = handle
+
+    def __getitem__(self, addr):
+        """Read a 16-bit word from an EEPROM location"""
+        d = _ft.WORD()
+        call_ft(_ft.FT_ReadEE, self.handle, _ft.DWORD(addr), c.byref(d))
+        return d.value
+
+    def __setitem__(self, addr, value):
+        """Write a 16-bit word to an EEPROM location"""
+        call_ft(_ft.FT_WriteEE, self.handle, _ft.DWORD(addr), _ft.WORD(value))
+
 class FTD2XX(object):
     """Class for communicating with an FTDI device"""
     def __init__(self, handle, update=True):
@@ -145,6 +160,7 @@ class FTD2XX(object):
         # createDeviceInfoList is slow, only run if update is True
         if update: createDeviceInfoList()
         self.__dict__.update(self.getDeviceInfo())
+        self.eeprom = EEPROM(handle)
 
     def close(self):
         """Close the device handle"""
@@ -372,16 +388,6 @@ class FTD2XX(object):
         call_ft(_ft.FT_EE_UARead, self.handle, c.cast(buf, _ft.PUCHAR),
                 b_to_read, c.byref(b_read))
         return buf.value[:b_read.value]
-
-    def readEE(self, addr):
-        """Read a 16-bit word from an EEPROM location"""
-        d = _ft.WORD()
-        call_ft(_ft.FT_ReadEE, self.handle, _ft.DWORD(addr), c.byref(d))
-        return d.value
-
-    def writeEE(self, addr, value):
-        """Write a 16-bit word to an EEPROM location"""
-        call_ft(_ft.FT_WriteEE, self.handle, _ft.DWORD(addr), _ft.WORD(value))
 
     baudrate = property(None, setBaudRate)
 
