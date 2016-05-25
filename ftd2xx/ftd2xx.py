@@ -105,6 +105,12 @@ def openEx(id_str, flags=OPEN_BY_SERIAL_NUMBER):
     call_ft(_ft.FT_OpenEx, id_str, _ft.DWORD(flags), c.byref(h))
     return FTD2XX(h)
 
+def open_by_desc(desc):
+    """Open a handle to a usb device by description"""
+    h = _ft.FT_HANDLE()
+    call_ft(_ft.FT_OpenEx, desc, _ft.DWORD(OPEN_BY_DESCRIPTION), c.byref(h))
+    return FTD2XX(h, update=False)
+
 if sys.platform == 'win32':
     from win32con import GENERIC_READ, GENERIC_WRITE, OPEN_EXISTING
     def w32CreateFile(name, access=GENERIC_READ|GENERIC_WRITE,
@@ -397,7 +403,7 @@ class FTD2XX(object):
 
 __all__ = ['call_ft', 'listDevices', 'getLibraryVersion', \
            'createDeviceInfoList', 'getDeviceInfoDetail', 'open', \
-           'openEx', 'FTD2XX',  \
+           'openEx', 'open_by_desc', 'FTD2XX',  \
            'DeviceError', 'ft_program_data']
 if sys.platform == 'win32':
     __all__ += ['w32CreateFile']
