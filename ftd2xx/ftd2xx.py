@@ -383,6 +383,33 @@ class FTD2XX(object):
         """Write a 16-bit word to an EEPROM location"""
         call_ft(_ft.FT_WriteEE, self.handle, _ft.DWORD(addr), _ft.WORD(value))
 
+    baudrate = property(None, setBaudRate)
+
+    def dtr(self, val):
+        self.setDtr() if val else self.clrDtr()
+    dtr = property(None, dtr)
+
+    def dsr(self):
+        return (self.modem_status & 0x20) != 0
+    dsr = property(dsr, None)
+
+    def rts(self, val):
+        self.setRts() if val else self.clrRts()
+    rts = property(None, rts)
+
+    def cts(self):
+        return (self.modem_status & 0x10) != 0
+    cts = property(cts, None)
+
+    modem_status = property(getModemStatus, None)
+    queue_status = property(getQueueStatus, None)
+    all_status = property(getStatus, None)
+    event_status = property(getEventStatus, None)
+    latency_timer = property(getLatencyTimer, setLatencyTimer)
+    device_info = property(getDeviceInfo, None)
+    driver_version = property(getDriverVersion, None)
+    ee_ua_size = property(eeUASize, None)
+
 __all__ = ['call_ft', 'listDevices', 'getLibraryVersion', \
            'createDeviceInfoList', 'getDeviceInfoDetail', 'open', \
            'openEx', 'open_by_desc', 'FTD2XX',  \
