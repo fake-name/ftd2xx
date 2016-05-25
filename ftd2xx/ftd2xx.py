@@ -373,6 +373,16 @@ class FTD2XX(object):
                 b_to_read, c.byref(b_read))
         return buf.value[:b_read.value]
 
+    def readEE(self, addr):
+        """Read a 16-bit word from an EEPROM location"""
+        d = _ft.WORD()
+        call_ft(_ft.FT_ReadEE, self.handle, _ft.DWORD(addr), c.byref(d))
+        return d.value
+
+    def writeEE(self, addr, value):
+        """Write a 16-bit word to an EEPROM location"""
+        call_ft(_ft.FT_WriteEE, self.handle, _ft.DWORD(addr), _ft.WORD(value))
+
 __all__ = ['call_ft', 'listDevices', 'getLibraryVersion', \
            'createDeviceInfoList', 'getDeviceInfoDetail', 'open', \
            'openEx', 'open_by_desc', 'FTD2XX',  \
