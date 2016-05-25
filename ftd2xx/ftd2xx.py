@@ -58,7 +58,7 @@ def listDevices(flags=0):
         call_ft(_ft.FT_ListDevices, ba, c.byref(n), _ft.DWORD(LIST_ALL|flags))
         return [res for res in ba[:devcount]]
     else:
-        return None
+        return []
 
 def getLibraryVersion():
     """Return a long representing library version"""
@@ -133,7 +133,6 @@ else:
     def setVIDPID(vid, pid):
         """Linux only. Set the VID and PID of the device"""
         call_ft(_ft.FT_SetVIDPID, _ft.DWORD(vid), _ft.DWORD(pid))
-        return None
 
 class FTD2XX(object):
     """Class for communicating with an FTDI device"""
@@ -174,46 +173,37 @@ class FTD2XX(object):
     def setBaudRate(self, baud):
         """Set the baud rate"""
         call_ft(_ft.FT_SetBaudRate, self.handle, _ft.DWORD(baud))
-        return None
 
     def setDivisor(self, div):
         """Set the clock divider. The clock will be set to 6e6/(div + 1)."""
         call_ft(_ft.FT_SetDivisor, self.handle, _ft.USHORT(div))
-        return None
 
     def setDataCharacteristics(self, wordlen, stopbits, parity):
         """Set the data characteristics for UART"""
         call_ft(_ft.FT_SetDataCharacteristics, self.handle,
                 _ft.UCHAR(wordlen), _ft.UCHAR(stopbits), _ft.UCHAR(parity))
-        return None
 
     def setFlowControl(self, flowcontrol, xon=-1, xoff=-1):
         if flowcontrol == FLOW_XON_XOFF and (xon == -1 or xoff == -1):
             raise ValueError
         call_ft(_ft.FT_SetFlowControl, self.handle,
                 _ft.USHORT(flowcontrol), _ft.UCHAR(xon), _ft.UCHAR(xoff))
-        return None
 
     def resetDevice(self):
         """Reset the device"""
         call_ft(_ft.FT_ResetDevice, self.handle)
-        return None
 
     def setDtr(self):
         call_ft(_ft.FT_SetDtr, self.handle)
-        return None
 
     def clrDtr(self):
         call_ft(_ft.FT_ClrDtr, self.handle)
-        return None
 
     def setRts(self):
         call_ft(_ft.FT_SetRts, self.handle)
-        return None
 
     def clrRts(self):
         call_ft(_ft.FT_ClrRts, self.handle)
-        return None
 
     def getModemStatus(self):
         m = _ft.DWORD()
@@ -223,22 +213,18 @@ class FTD2XX(object):
     def setChars(self, evch, evch_en, erch, erch_en):
         call_ft(_ft.FT_SetChars, self.handle, _ft.UCHAR(evch),
                 _ft.UCHAR(evch_en), _ft.UCHAR(erch), _ft.UCHAR(erch_en))
-        return None
 
     def purge(self, mask=0):
         if not mask:
             mask = PURGE_RX | PURGE_TX
         call_ft(_ft.FT_Purge, self.handle, _ft.DWORD(mask))
-        return None
 
     def setTimeouts(self, read, write):
         call_ft(_ft.FT_SetTimeouts, self.handle, _ft.DWORD(read),
                 _ft.DWORD(write))
-        return None
 
     def setDeadmanTimeout(self, timeout):
         call_ft(_ft.FT_SetDeadmanTimeout, self.handle, _ft.DWORD(timeout))
-        return None
 
     def getQueueStatus(self):
         """Get number of bytes in receive queue."""
@@ -249,7 +235,6 @@ class FTD2XX(object):
     def setEventNotification(self, evtmask, evthandle):
         call_ft(_ft.FT_SetEventNotification, self.handle,
                 _ft.DWORD(evtmask), _ft.HANDLE(evthandle))
-        return None
 
     def getStatus(self):
         """Return a 3-tuple of rx queue bytes, tx queue bytes and event
@@ -263,15 +248,12 @@ class FTD2XX(object):
 
     def setBreakOn(self):
         call_ft(_ft.FT_SetBreakOn, self.handle)
-        return None
 
     def setBreakOff(self):
         call_ft(_ft.FT_SetBreakOff, self.handle)
-        return None
 
     def setWaitMask(self, mask):
         call_ft(_ft.FT_SetWaitMask, self.handle, _ft.DWORD(mask))
-        return None
 
     def waitOnMask(self):
         mask = _ft.DWORD()
@@ -285,7 +267,6 @@ class FTD2XX(object):
 
     def setLatencyTimer(self, latency):
         call_ft(_ft.FT_SetLatencyTimer, self.handle, _ft.UCHAR(latency))
-        return None
 
     def getLatencyTimer(self):
         latency = _ft.UCHAR()
@@ -295,7 +276,6 @@ class FTD2XX(object):
     def setBitMode(self, mask, enable):
         call_ft(_ft.FT_SetBitMode, self.handle, _ft.UCHAR(mask),
                 _ft.UCHAR(enable))
-        return None
 
     def getBitMode(self):
         mask = _ft.UCHAR()
@@ -305,7 +285,6 @@ class FTD2XX(object):
     def setUSBParameters(self, in_tx_size, out_tx_size=0):
         call_ft(_ft.FT_SetUSBParameters, self.handle, _ft.ULONG(in_tx_size),
                 _ft.ULONG(out_tx_size))
-        return None
 
     def getDeviceInfo(self):
         """Returns a dictionary describing the device. """
@@ -321,23 +300,18 @@ class FTD2XX(object):
 
     def stopInTask(self):
         call_ft(_ft.FT_StopInTask, self.handle)
-        return None
 
     def restartInTask(self):
         call_ft(_ft.FT_RestartInTask, self.handle)
-        return None
 
     def setRestPipeRetryCount(self, count):
         call_ft(_ft.FT_SetResetPipeRetryCount, self.handle, _ft.DWORD(count))
-        return None
 
     def resetPort(self):
         call_ft(_ft.FT_ResetPort, self.handle)
-        return None
 
     def cyclePort(self):
         call_ft(_ft.FT_CyclePort, self.handle)
-        return None
 
     def getDriverVersion(self):
         drvver = _ft.DWORD()
@@ -359,7 +333,6 @@ class FTD2XX(object):
         progdata.Signature2 = _ft.DWORD(0xffffffff)
         progdata.Version = _ft.DWORD(2)
         call_ft(_ft.FT_EE_Program, self.handle, progdata)
-        return None
         
     def eeRead(self):
         """Get the program information from the EEPROM"""
@@ -391,7 +364,6 @@ class FTD2XX(object):
         appropriate byte values"""
         call_ft(_ft.FT_EE_UAWrite, self.handle, c.cast(data, _ft.PUCHAR),
                 len(data))
-        return None
 
     def eeUARead(self, b_to_read):
         """Read b_to_read bytes from the EEPROM user area"""
