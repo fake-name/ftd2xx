@@ -162,6 +162,8 @@ class EEPROM(object):
         """Write a 16-bit word to an EEPROM location"""
         call_ft(_ft.FT_WriteEE, self.handle, _ft.DWORD(addr), _ft.WORD(value))
 
+FlowControlFlags = {'rtscts':FLOW_RTS_CTS, 'xonxoff':FLOW_XON_XOFF, 'none':FLOW_NONE, 'dtrdsr':FLOW_DTR_DSR}
+
 class FTD2XX(object):
     """Class for communicating with an FTDI device"""
     def __init__(self, handle, update=True):
@@ -213,6 +215,8 @@ class FTD2XX(object):
                 _ft.UCHAR(wordlen), _ft.UCHAR(stopbits), _ft.UCHAR(parity))
 
     def setFlowControl(self, flowcontrol, xon=-1, xoff=-1):
+        """Set the flow control strategy (one of 'rtscts', 'xonxoff', 'dtrdsr', 'none')"""
+        flowcontrol = FlowControlFlags.get(flowcontrol, flowcontrol)
         if flowcontrol == FLOW_XON_XOFF and (xon == -1 or xoff == -1):
             raise ValueError
         call_ft(_ft.FT_SetFlowControl, self.handle,
