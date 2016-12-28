@@ -148,7 +148,8 @@ else:
         call_ft(_ft.FT_SetVIDPID, _ft.DWORD(vid), _ft.DWORD(pid))
 
 class EEPROM(object):
-    """Class for reading and writing EEPROM as an array of 16-bit words"""
+    """Class for reading and writing EEPROM as an array of 16-bit words.
+Checksum update is automatically handled."""
     def __init__(self, handle):
         self.handle = handle
 
@@ -160,7 +161,15 @@ class EEPROM(object):
 
     def __setitem__(self, addr, value):
         """Write a 16-bit word to an EEPROM location"""
+        upd = 0xffff & (self[addr] ^ value)
         call_ft(_ft.FT_WriteEE, self.handle, _ft.DWORD(addr), _ft.WORD(value))
+        # update checksum assuming initial checksum is correct
+        # ee[127] = 0x5555 ^ (ee[0] << 127) ^ (ee[1] << 126) ... ^ sl(ee[126] << 1)
+        # shifts are 16-bit circular shifts
+        n = (127 - addr) % 16
+        upd = 0xffff & ((upd << n) | (upd >> (16 - n)))
+        upd ^= self[127]
+        call_ft(_ft.FT_WriteEE, self.handle, _ft.DWORD(127), _ft.WORD(upd))
 
 FlowControlFlags = {'rtscts':FLOW_RTS_CTS, 'xonxoff':FLOW_XON_XOFF, 'none':FLOW_NONE, 'dtrdsr':FLOW_DTR_DSR}
 
