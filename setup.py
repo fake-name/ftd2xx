@@ -53,5 +53,6 @@ setup(
     test_suite="ftd2xx.tests.t_ftd2xx",
     long_description=long_description,
     cmdclass = {'build_py': build_py, 'build_scripts': build_scripts},
+    package_data = {'ftd2xx': ['*.so']}
     # could also include long_description, download_url, classifiers, etc.
 )
