@@ -182,9 +182,11 @@ class FTD2XX(object):
         call_ft(_ft.FT_Close, self.handle)
         self.status = 0
 
-    def read(self, nchars, raw=True):
+    def read(self, nchars=-1, raw=True):
         """Read up to nchars bytes of data from the device. Can return fewer if
         timedout. Use getQueueStatus to find how many bytes are available"""
+        if nchars == -1:
+            nchars = self.queue_status
         b_read = _ft.DWORD()
         b = c.c_buffer(nchars)
         call_ft(_ft.FT_Read, self.handle, b, nchars, c.byref(b_read))
