@@ -4,13 +4,14 @@ from ctypes import *
 import ctypes.util as ctu
 import os
 
+
 def load_library(libname):
     libPath = ctu.find_library(libname)
     if libPath:
         return CDLL(libPath)
 
     # First look in the local paths.
-    paths = ["./", "../"]
+    paths = ["./ftd2xx", "./", "../"]
 
     # Then, the LD_LIBRARY_PATH (if set)
     if 'LD_LIBRARY_PATH' in os.environ:
@@ -24,6 +25,8 @@ def load_library(libname):
     if 'PATH' in os.environ:
         paths.extend(os.environ['PATH'].split(":"))
 
+    paths = [os.path.abspath(tmp) for tmp in paths]
+
     for directory in paths:
         libp = os.path.join(directory, libname)
         if os.path.exists(libp):
@@ -31,10 +34,11 @@ def load_library(libname):
                 return CDLL(libp)
             except Exception:
                 continue
-
-    raise EnvironmentError("Required DLL not found.")
-
-
+    err = "Required SO file not found!\n"
+    err += "Searched paths:\n"
+    for pathn in paths:
+        err += "    '%s'\n" % pathn
+    raise EnvironmentError(err)
 
 
 _libraries = {}
