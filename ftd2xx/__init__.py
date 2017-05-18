@@ -8,7 +8,7 @@ There are a few convinience functions too
 """
 import sys
 
-from ftd2xx import *
+from .ftd2xx import *
 
 
 __all__ = ['call_ft', 'listDevices', 'getLibraryVersion', \
